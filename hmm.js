@@ -119,7 +119,9 @@ HMM.train = function(hmm, s, rate){
 };
 
 // Generate string from HMM which ends with stop, and has min. length len.
-HMM.prototype.generate = function(stop, len){
+// q determines minimum quality.
+HMM.prototype.generate = function(stop, len, q){
+	q = q || 0;
 	var choose = function(a){
 		var x = Math.random();
 		for(i=0;i<a.length&&x>0;i++) x-=a[i];
@@ -128,15 +130,18 @@ HMM.prototype.generate = function(stop, len){
 	var s = "", c = '', n;
 	var pos = choose(this._init);
 	do{
-		n = this._nodes[pos];
-		c = this._alphabet[choose(n.prob)];
-		if(len && s.length < len && c==stop){
-			c = stop+'x';
-		}else{
-			s += c;
-			pos = choose(n.next);
-		}
-	}while(c !== stop);
+		s = '';
+		do{
+			n = this._nodes[pos];
+			c = this._alphabet[choose(n.prob)];
+			if(len && s.length < len && c==stop){
+				c = stop+'x';
+			}else{
+				s += c;
+				pos = choose(n.next);
+			}
+		}while(c !== stop);
+	}while(q > 0 && Math.pow(this.evaluate(s), 1/s.length) < q);
 	return s;
 };
 

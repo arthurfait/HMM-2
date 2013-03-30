@@ -18,6 +18,6 @@ for(var i=0;i<NUM_TRAINING;i++){
 }
 
 console.log('Generating...');
-for(var i=0;i<20;i++) console.log(hmm.generate('$', 4));
+for(var i=0;i<20;i++) console.log(hmm.generate('$', 4, 0.09));
 
 fs.writeFileSync('hmm.txt', hmm.toString());
